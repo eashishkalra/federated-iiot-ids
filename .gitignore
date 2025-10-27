@@ -1,0 +1,39 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.pt
+*.log
+*.tmp
+
+# --- Virtual environments ---
+.venv/
+env/
+venv/
+ENV/
+.ipynb_checkpoints/
+
+# --- System files ---
+.DS_Store
+Thumbs.db
+
+# --- IDE / Editor files ---
+.vscode/
+.idea/
+*.iml
+
+# --- Data and results ---
+data/
+outputs/
+*.csv
+*.png
+*.jpg
+*.jpeg
+
+# --- Backup or temp files ---
+*.bak
+*.swp
+*.swo
+*.orig
