@@ -1,0 +1,897 @@
+%% 
+%% Copyright 2019-2024 Elsevier Ltd
+%% 
+%% Version 2.4
+%% 
+%% This file is part of the 'CAS Bundle'.
+%% --------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'CAS Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+%% Template article for cas-sc documentclass for 
+%% single column output.
+
+%\documentclass[a4paper,fleqn,longmktitle]{cas-sc}
+\documentclass[a4paper,fleqn]{cas-sc}
+
+%\usepackage[numbers]{natbib}
+%\usepackage[authoryear]{natbib}
+\usepackage[authoryear,longnamesfirst]{natbib}
+
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage[title]{appendix}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{manyfoot}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage[section]{placeins}
+
+
+%%%Author macros
+\def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
+\tsc{WGM}
+\tsc{QE}
+\tsc{EP}
+\tsc{PMS}
+\tsc{BEC}
+\tsc{DE}
+%%%
+
+\begin{document}
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+\shorttitle{Leveraging social media news}
+\shortauthors{A. Kalra et~al.}
+%\begin{frontmatter}
+
+\title [mode = title]{A Privacy-Preserving Spatio-Temporal Framework for IIoT Intrusion Detection via Federated Learning and Enhanced PC-BGCN}                      
+\tnotemark[1,2]
+
+\tnotetext[1]{This document is the results of the research
+   project funded by the National Science Foundation.}
+
+\tnotetext[2]{The second title footnote which is a longer text matter
+   to fill through the whole text width and overflow into
+   another line in the footnotes area of the first page.}
+
+
+\author[1]{Ashish Kalra}
+\cormark[1]
+\ead{ashishkalra2k22phdco502@dtu.ac.in}
+
+\author[1]{Manoj Kumar}
+\fnmark[1]
+\ead{mkumarg@dtu.ac.in}
+
+\affiliation[1]{organization={Department of Computing Science and Engineering, Delhi Technological University},
+                city={Delhi},
+                postcode={110042},
+                country={India}}
+
+\cortext[cor1]{Corresponding author}
+\fntext[fn1]{These authors contributed equally to this work.}
+
+\begin{abstract}
+Recent advancements in the Internet of Things (IoT) have enabled large-scale deployment of connected devices, generating massive network traffic and introducing critical security risks. Conventional intrusion detection approaches often struggle with complex, non-stationary IIoT traffic patterns and limited generalization. Federated learning-driven intrusion detection systems outperform traditional approaches by utilizing distributed data from multiple sources, maintaining privacy, and improving model generalization through cooperative training across organizations. Despite these benefits, current federated learning intrusion detection methods still face several obstacles, including protecting sensitive data, reducing communication costs, and increasing detection accuracy. To address these challenges, the study introduces a federated learning-driven intrusion detection framework that incorporates Enhanced DP-BGCN, a newly developed deep learning architecture, to improve secure information exchange and increase detection performance. Federated learning, a privacy-focused machine learning approach, allows multiple participants to jointly build a global intrusion detection model while keeping their sensitive data local and undisclosed.
+
+The proposed framework initially develops local models using Enhanced PC-BGCN, which combines Graph Convolutional Networks (GCN) with Bidirectional Gated Recurrent Units (BiGRU). To strengthen privacy preservation, differential privacy along with gradient quantization is incorporated. In addition, homomorphic encryption is used to secure local model updates, ensuring stronger data confidentiality and protection. On the server side, update aggregation and collaborative optimization strategies are employed to reduce the number of communication rounds required during the aggregation process.
+
+The experimental results indicate that PC-BGCN performs better than conventional models such as GhostNet, BiGRU, RNN, Auto Encoder, and CNN across key evaluation metrics, including accuracy, precision, recall, F-score, and mean square error (MSE). For example, on the KDD CUP 99 dataset, PC-BGCN attains an accuracy of 99.24\%, exceeding the performance of the compared models by a notable margin. The proposed approach offers a reliable and secure solution for intrusion detection by preserving the confidentiality of sensitive information while enhancing detection accuracy.
+\end{abstract}
+
+\begin{graphicalabstract}
+\includegraphics{figs/cas-grabs.pdf}
+\end{graphicalabstract}
+
+\begin{highlights}
+\item Research highlights item 1
+\item Research highlights item 2
+\item Research highlights item 3
+\end{highlights}
+
+\begin{keywords}
+Federated learning \sep intrusion detection \sep hybrid deep learning
+\end{keywords}
+
+
+\maketitle
+
+
+\section{Introduction}\label{sec1}
+
+
+The Internet of Things (IoT) is an ecosystem of interconnected devices capable of exchanging data across complex external networks~\cite{bib1,bib28}. This includes a diverse array of sensors, industrial equipment, and smart appliances. As connectivity advances, Industrial IoT (IIoT) systems have become vital for real-time communication in domains such as manufacturing and smart cities. However, the proliferation of these devices has significantly expanded the attack surface, introducing critical security challenges.
+
+As Internet technology advances, threats such as Denial of Service (DoS) and large-scale botnet-driven campaigns have become increasingly prevalent~\cite{bib2,bib29}. These risks compromise data integrity and system availability. To counter these threats, Network Intrusion Detection Systems (NIDS) are employed to analyze traffic for suspicious behavior. While traditional signature-based methods fail against zero-day attacks, and anomaly-based methods often suffer from high false-positive rates, Deep Learning (DL) has emerged as a superior approach for identifying complex, unrecognized attack patterns.
+
+However, conventional DL-based NIDS face a significant privacy-utility paradox. Training robust models requires massive, centralized datasets, yet in critical IIoT sectors, sharing raw network traffic data is often prohibited due to strict privacy regulations and data confidentiality concerns. Furthermore, centralized training introduces single-point-of-failure risks and high communication overhead when transmitting large datasets to a cloud server.
+
+Federated Learning (FL) has emerged as a paradigm shift, allowing multiple participants to jointly build a global intrusion detection model while keeping sensitive data local. While FL addresses basic data residency, it remains vulnerable to sophisticated privacy leakages, such as membership inference attacks, and suffers from high communication costs due to frequent model updates.
+
+In this context, the architectural design of the local model is paramount. Graph Convolutional Networks (GCN) are highly effective at identifying anomalies by processing the spatial topological structure of network infrastructure. However, GCNs alone struggle to model the bidirectional temporal relationships inherent in sequential network traffic. To address this, Bidirectional Gated Recurrent Units (BiGRU) are integrated to capture long-term dependencies in both forward and backward directions, providing a comprehensive spatio-temporal view of network behavior.
+
+Motivated by these challenges, this paper proposes a Privacy-Preserving Spatio-Temporal Federated Learning framework for IIoT intrusion detection. The framework introduces the Enhanced PC-BGCN architecture, which synergistically combines GCN and BiGRU layers. To ensure rigorous privacy, we incorporate Differential Privacy (DP) alongside Homomorphic Encryption (HE) to secure model updates. Additionally, Gradient Quantization is employed to reduce communication costs, ensuring the framework is viable for bandwidth-constrained IoT environments.
+
+The proposed method is evaluated using modern benchmarks, including CICIDS2018 and Edge-IIoTset. Experimental results demonstrate that our framework achieves superior performance compared to conventional models like GhostNet and standard BiGRU, maintaining high accuracy even under strict privacy budgets.
+
+Key contributions of the proposed model are:
+
+\begin{itemize}
+\item \textbf{A Novel Federated Spatio-Temporal Framework:} An intrusion detection architecture that integrates GCN and BiGRU within a Federated Learning environment to capture both network topology and sequential traffic behavior.
+\item \textbf{Privacy-Utility Optimization:} The integration of Differential Privacy (DP) and Homomorphic Encryption (HE), providing a "double-defense" mechanism against both malicious participants and honest-but-curious servers.
+\item \textbf{Communication Efficiency:} The application of Gradient Quantization techniques specifically tuned for IIoT traffic, significantly reducing the bandwidth required for FL aggregation rounds.
+\item \textbf{Modern Empirical Validation:} Extensive evaluation and ablation analysis on contemporary datasets (CICIDS2018 and Edge-IIoTset), demonstrating the framework's resilience and accuracy in real-world IIoT scenarios.
+\end{itemize}
+
+The structure of the paper is outlined as follows. A survey of existing research is presented in  Section~\ref{sec2}. Section~\ref{sec:preliminaries} provides the preliminary concepts required for this study. The methodology of the proposed BG-GCN model is explained in Section~\ref{sec:methodology}. Section~\ref{sec:results}  analyzes the results, and the paper is concluded in  Section~\ref{sec:conclusion} 
+
+
+
+\section{Related Work}\label{sec2}
+
+
+Intrusion detection has been extensively studied in the security literature, with researchers adopting diverse methodologies to improve detection accuracy and address complex attack scenarios. Current approaches include Recurrent Neural Networks (RNNs), Convolutional Neural Networks (CNNs), hybrid deep learning methods, and Artificial Neural Networks (ANNs). Deep learning approaches, particularly CNNs and RNNs, often deliver strong performance by learning hierarchical feature representations across multiple abstraction levels.
+
+In network security applications, CNNs, RNNs, and hybrid models are widely used alongside traditional machine learning methods that offer computational efficiency. However, a significant challenge remains: maintaining consistent detection accuracy across all traffic classes. These models often degrade on underrepresented attack categories, limiting practical deployment. Yin et al.~\cite{bib27} showed that recurrent neural networks, specifically LSTM and GRU architectures, can effectively learn temporal patterns in network traffic for intrusion classification. Comprehensive surveys of graph neural network architectures~\cite{bib26} and publicly available IDS benchmark datasets~\cite{bib30} provide essential context for evaluating and comparing detection approaches.
+
+Prabu et al.~\cite{bib6} developed a Dual Attention Graph Convolutional Neural Network capable of processing complex patterns in network traffic for intrusion detection. Feature selection employs the Greedy Sand Card Swarm optimization algorithm to identify the most discriminative features. Evaluated on BoT-IoT and NSL-KDD datasets with comprehensive preprocessing---including outlier removal and data normalization---the proposed method demonstrates superior performance compared to traditional approaches.
+
+Wang et al.\ proposed BS-GAT to address overfitting and insufficient graph information mining in intrusion detection systems. Real datasets are used to construct similarity-based graphs, and the GAT component captures edge-behavior relationships by leveraging the interaction between graph structure and data flow. This method demonstrates significant performance improvement on NF-BoT-IoT-v2 and NF-ToN-IoT-v2~\cite{bib7}.
+
+Rajak and Tripathi (2024) developed a deep learning--based Stacked Long Short-Term Memory (DL-SkLSTM) approach to address security challenges in 5G-enabled networks. The proposed SkLSTM framework was used to detect and categorize various types of cyberattacks by learning both short-term and long-term dependencies within the data, which improved threat prediction accuracy. Despite demonstrating strong performance in experimental evaluations, the model required significant computational resources and exhibited longer prediction times, limiting its overall efficiency~\cite{bib8}.
+
+Phung et al.\ proposed an intrusion detection system based on a Graph Attention Network, where Particle Swarm Optimization is used for feature extraction. Subsequently, 5-fold cross-validation is applied for model selection, and GAT emerged as the best classifier. Combined with the selected features, the approach demonstrates superior performance compared to previous studies~\cite{bib9}.
+
+Zhu et al.\ proposed GATransformer, which combines topological structure analysis with temporal sequence modeling~\cite{bib10}. Heterogeneous features are integrated to address unimodal representation constraints. A parallel processing framework facilitates reconstruction of network behavior, and graph attention helps identify spatial dependencies. Evaluation on CIDDS-001 and CIDDS-002 shows superior results.
+
+Zhang~\cite{bib11} proposed a framework that utilizes Graph Neural Networks (GNN) to detect radio frequency identification (RFID) tag-cloning attacks. The system automatically extracts topological relationships from RFID data, while a Graph Attention Network (GAT) component learns complex data dependencies. Experimental results showed improved accuracy in detecting cloning attacks.
+
+Ahanger et al.\ present a novel graph-based algorithm that constructs an intrusion detection system using a Graph Attention Network (GAT). The NSL-KDD dataset is used to benchmark the proposed system, and the method reports improvement over other approaches in the same domain~\cite{bib12}.
+
+Altunay et al.~\cite{bib13} proposed a deep learning-based intrusion detection system using a combination of CNN and LSTM models. This hybrid CNN+LSTM system was validated on UNSW-NB15 and X-IIoTID datasets. The model achieved 93.21 on binary classification and 92.9 on multiclass classification for UNSW-NB15, and 99.84 and 99.80 on binary and multiclass classification, respectively, for X-IIoTID.
+
+Xia et al.\ proposed an intrusion detection system based on ResNet-BiGRU, where hyperparameters are optimized using Particle Swarm Optimization (PSO) combined with a Genetic Algorithm (GA). ResNet extracts local features while BiGRU extracts temporal features from the input data. An attention mechanism following BiGRU assigns weights to features, helping to capture the most important ones for intrusion detection. The unique PSO-GA combination optimizes hyperparameters and avoids local optima, achieving automated optimization. This model is evaluated on KDD99, UNSW-NB15, CIC-IDS 2017, and NSL-KDD, showing superior performance compared to other state-of-the-art models~\cite{bib14}.
+
+Cao et al.\ proposed a hybrid sampling model combining Repeated Edited Nearest Neighbors (RENN) with Adaptive Synthetic Sampling (ADASYN). This method addresses the problem of data imbalance in the original dataset. Random Forest and Pearson correlation analysis are used for feature selection from the balanced dataset. CNN extracts spatial features, which are passed to GRU for extracting long-range dependencies. A softmax layer is used for multiclass classification. The UNSW-NB15, NSL-KDD, and CIC-IDS2017 datasets are evaluated with the proposed method, showing improved intrusion detection performance~\cite{bib15}.
+
+Li et al.\ proposed a novel intrusion detection method called CRSF. This method converts input data into two-dimensional images. Spatial features are extracted from these images using a convolution kernel, followed by an RNN that captures temporal features. A support vector machine is used as a classifier over these pre-trained features for intrusion classification. The TON\_IoT dataset demonstrates the effectiveness of this method, with accuracy, F1-score, and AUC of 0.9959, 0.9959, and 0.9977, respectively~\cite{bib16}.
+
+Donkol et al.\ proposed a novel method using enhanced LSTM combined with a Likely-Point Particle Swarm Optimization system (LPPSO). This method addresses the gradient-clipping issue. Feature selection is performed using enhanced particle swarm optimization, and the enhanced LSTM further processes these features to efficiently classify attack traffic from normal traffic. The proposed system is evaluated on four datasets: UNSW-NB15, CICIDS2017, CSE-CIC-IDS2018, and BOT\_DATASET~\cite{bib17}.
+
+
+Koca and Avci proposed an intrusion detection model using synergistic GCN (Graph Convolutional Networks) and LSTM (Long Short-Term Memory) models. Dynamic interactions and data flow in the network are analyzed to predict intrusions. This model addresses the core design challenges of intrusion detection systems and achieves an accuracy of 99.99\% while differentiating deceptive connectivity disruptions~\cite{bib18}.
+
+
+\begin{table}[tp]
+\caption{Summary of related works on intrusion detection systems}\label{tab:related_work}
+\centering
+\small
+\begin{tabular}{@{}p{0.4cm}p{1.8cm}p{2.8cm}p{2.0cm}p{2.6cm}p{0.8cm}@{}}
+\toprule
+No & Author. Year  & Model  &  Dataset  &  Results (Accuracy) &  Ref. \\
+\midrule
+1 & Prabu et al.\ (2025) & Dual Attention GCN & BoT-IoT and NSL-KDD & 99.19\%, 99.08\% respectively &~\cite{bib6} \\
+2 & Wang et al.\ (2025) & Behavioral similarity-based graph attention network & NF-BoT-IoT-v2 and NF-ToN-IoT-v2  & 97\%, 98\% respectively &~\cite{bib7} \\
+3 & Rajak and Tripathi (2024) & Stacked Long Short-Term Memory & 5G-enabled IIoT dataset & 98.3\% &~\cite{bib8} \\
+4 & Phung et al.\ (2024) & Graph Attention Network (GAT), Particle Swarm Optimization & NSL-KDD & 89.77\% &~\cite{bib9} \\
+5 & Zhu et al. (2025) & GATransformer & CIDDS-001, CIDDS-002 & 99.99\%, 99.98\% &~\cite{bib10} \\
+6 & Zhang (2025) & GNN & Custom & 80.50\% &~\cite{bib11} \\
+7 & Ahanger et al.\ (2025) & GNN & NSL-KDD & 99\% &~\cite{bib12} \\
+8 & Altunay and Albayrak (2023) & CNN+LSTM & UNSW-NB15, X-IIoTID & UNSW-NB15: 93.21\% (binary), 92.9\% (multiclass); X-IIoTID: 99.84\%, 99.80\% &~\cite{bib13} \\
+9 & Xia et al.\ (2024) & PSO-GA optimized ResNet-BiGRU & KDD99, UNSW-NB15, CIC-IDS2017, NSL-KDD & Superior performance reported (exact accuracy not specified) &~\cite{bib14} \\
+10 & Cao et al.\ (2022) & RENN-ADASYN + CNN-GRU & UNSW-NB15, NSL-KDD, CIC-IDS2017 & Improved performance reported (exact accuracy not specified) &~\cite{bib15} \\
+11 & Li et al.\ (2023) & CRSF (CNN2D-RNN + SVM) & ToN\_IoT dataset & Accuracy: 0.9959, F1-score: 0.9959, AUC: 0.9977 &~\cite{bib16} \\
+12 & Donkol et al.\ (2023) & LPPSO + Enhanced LSTM-RNN & UNSW-NB15, CICIDS2017, CSE-CIC-IDS2018, BOT\_DATASET & Improved classification performance reported (exact accuracy not specified) &~\cite{bib17} \\
+13 & Koca and Avci (2024) & GCN+LSTM & IoT/ICS network data & 99.99\% accuracy &~\cite{bib18} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+\section{Preliminaries}\label{sec:preliminaries}
+
+\subsection{BiGRU}
+The primary objective of the BiGRU layer is to capture temporal features from input data. BiGRU is a variant of recurrent neural network (RNN) architectures, specifically the Gated Recurrent Unit (GRU) model~\cite{bib20}. The GRU incorporates information from previous time steps along with current inputs, enabling efficient extraction of temporal patterns. Although GRU shares structural similarities with LSTM (Long Short-Term Memory), it is designed with fewer parameters and employs an update gate, a reset gate, and a candidate hidden state. The critical distinction between BiGRU and standard GRU lies in its bidirectional processing mechanism, which processes sequential data in both forward and backward directions.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{BiGRU.png}
+    \caption{BiGRU Structure}\label{fig:BiGRU}
+\end{figure}
+
+LSTM~\cite{bib24} addresses vanishing and exploding gradient problems while preserving long-term dependencies; GRU often achieves comparable performance with a simpler architecture. In intrusion detection applications, both current and historical packet information influence prediction outcomes. This bidirectional capability enables BiGRU to learn contextual temporal patterns essential for accurately identifying intrusions.
+
+Let the input at time $t$ be $x_t$, and let $\overrightarrow{h_t}$ and $\overleftarrow{h_t}$ denote the hidden states from the forward and backward GRU, respectively.
+
+\begin{equation}
+\overrightarrow{h_t} = \mathrm{GRU}(x_t, \overrightarrow{h}_{t-1})
+\end{equation}
+
+\begin{equation}
+\overleftarrow{h_t} = \mathrm{GRU}(x_t, \overleftarrow{h}_{t-1})
+\end{equation}
+
+\begin{equation}
+H_t = [\overrightarrow{h}_t, \overleftarrow{h}_t]
+\end{equation}
+
+\begin{equation}
+y_t = W_1\overrightarrow{h}_t + W_2\overleftarrow{h}_t + b
+\end{equation}
+
+where $y_t$ is the output at time $t$, $W_1$ and $W_2$ are weights for forward and backward hidden-state inputs, and $b$ is the bias term.
+
+BiGRU has been widely applied across multiple domains, including natural language processing, time-series analysis, human activity recognition, and signal processing applications.
+
+\subsection{GCN}
+Graph Convolutional Networks (GCNs) were introduced by Kipf and Welling~\cite{bib19} in 2016. A graph is formally represented as $G = (V, E)$, where $V$ denotes the node set and $E$ denotes the edge set. Graphs constitute expressive data structures for representing relationships among entities. While conventional convolutional neural networks operate effectively on Euclidean domains such as images, they are not directly applicable to non-Euclidean graph data. GCNs address this limitation by operating directly on graph-structured inputs.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{GCN.png}
+    \caption{GCN Structure}\label{fig:GCN}
+\end{figure}
+
+Two key aspects enable GCNs to capture domain-specific information: node features and graph structure. Node features represent intrinsic properties of entities, whereas edges represent relationships or communication patterns among nodes. GCNs employ the adjacency matrix and related transformations to aggregate neighborhood information and capture spatial dependencies in graph-structured data. This capability makes GCNs particularly suitable for social networks, communication networks, and other relational domains~\cite{bib26}. Graph Attention Networks (GAT)~\cite{bib25} extend this paradigm by assigning learnable attention weights to neighbor aggregation, enabling more selective feature propagation. In intrusion detection applications, network-flow correlations can be represented as graph structures containing information such as source address, destination address, and port-level interactions.
+
+\subsection{Secretary Bird Optimization Algorithm}
+The Secretary Bird Optimization Algorithm (SBOA)~\cite{bib23} is a nature-inspired metaheuristic algorithm derived from the predatory and evasive behaviors of secretary birds. These birds possess powerful legs and talons that enable efficient ground-based locomotion and hunting capabilities.
+
+Secretary birds employ systematic strategies for both prey acquisition and predator avoidance. During the hunting phase, they utilize height advantage to track prey movement and weaken it through coordinated strikes. During evasion, they employ camouflage or sustained flight behaviors. SBOA formalizes these behaviors into mathematical exploration and exploitation operations designed to achieve effective global optimization.
+
+
+
+\section{Methodology}\label{sec:methodology}
+
+This study proposes BG-GCN, a hybrid intrusion detection method composed of two modules. First, a GCN front-end extracts spatial representations from graph-structured feature relationships. These graph-enhanced representations are then passed to stacked BiGRU layers to model temporal dependencies and classify traffic patterns.
+GCN and BiGRU serve complementary roles: GCN captures inter-feature structural context, while BiGRU captures sequential dynamics in the learned embeddings. In the proposed implementation, each sample is represented as a single-timestep feature vector (timesteps = 1). A feature-feature adjacency matrix is constructed from absolute Pearson correlations, followed by top-k neighborhood filtering and symmetric normalization. The normalized graph is then used for graph convolution before recurrent modeling and softmax classification.
+
+\subsection{Pre-processing}
+Pre-processing is important to ensure that network interactions inside the dataset are correctly reflected in the model inputs. The dataset structure and data types are first examined, followed by train-split imputation, feature engineering, standardization, and feature filtering. This improves compatibility with the BG-GCN framework and enhances intrusion prediction performance in IoT networks. Standardization is performed using z-score scaling, as shown below:
+
+\begin{equation}
+z = \frac{x - \bar{x}}{\operatorname{std}(x)}
+\end{equation}
+
+where $\bar{x}$ is the mean of $x$, and $\operatorname{std}(x)$ is its standard deviation.
+
+\subsection{GCN Network (Feature Extraction)}
+A graph can be defined by disjoint sets $V$ and $E$, where $V$ is the node set and $E$ is the edge set. Graph mapping not only includes defining nodes but also preserving network connections that represent topology.
+
+
+Mapping graph nodes to input data has a major impact on GCN processing. In this work, graph nodes correspond to features rather than flow records. For CICIDS2017, each sample is represented by a preprocessed feature vector, and each feature dimension is treated as a node in a feature-correlation graph. Example traffic attributes include:
+\begin{itemize}
+\item Destination Port
+\item Flow Duration
+\item Total Forward/Backward Packets
+\end{itemize}
+
+Edges are derived from absolute pairwise feature correlations computed on the training split. A top-k neighborhood filter is applied to retain informative edges and suppress weak relations, then the adjacency is symmetrized and normalized before graph convolution. The GCN front-end projects graph-mixed features, and the resulting embeddings are processed by stacked BiGRU layers for temporal modeling and classification.
+
+
+\subsection{BiGRU Layer}
+After the GCN module, a BiGRU layer is used for temporal feature extraction. For better extraction of temporal dependencies, two BiGRU layers are stacked. The normalized output from the GCN layer is used as input to the first BiGRU module, whose output sequence is then fed to the second BiGRU layer. The final output is passed to fully connected layers for classification.
+
+
+\subsection{SBOA (Secretary Bird Optimization Algorithm)}
+The mathematical modeling of SBOA demonstrates robust problem-solving capabilities, particularly in high-dimensional problems. It balances exploration and exploitation, achieving fast convergence and high accuracy. The algorithm consists of three phases: initial preparation, hunting strategy (exploration), and escape strategy (exploitation).
+
+
+\textbf{Initial Preparation.}
+To begin the search process, the initial position of each secretary bird is randomly generated using the following equation:
+
+\begin{equation}
+x_{i,j} = l_j + r_{i,j}\,(u_j - l_j), \quad i = 1,\ldots,N,\; j = 1,\ldots,d
+\end{equation}
+
+where $l_j$ and $u_j$ are the lower and upper bounds of the $j$th variable, $r_{i,j} \in [0,1]$ is a random number, $N$ is the population size, and $d$ is the search-space dimension.
+
+
+\textbf{Hunting Strategy (Exploration Phase).}
+The predation phase is categorized into three stages: searching for prey, consuming prey, and feeding on prey. Based on this behavior, the predation time is divided into three intervals:
+
+
+\textbf{Stage 1 (Searching for prey):} occurs during $t < T/3$.
+\begin{equation}
+x_{i,j}^{\mathrm{new}} = x_{i,j} + R_{1,j}\,(x_{\mathrm{rand1},j} - x_{\mathrm{rand2},j}), \quad t < T/3
+\end{equation}
+
+where $x_{\mathrm{rand1}}$ and $x_{\mathrm{rand2}}$ are randomly selected candidate solutions, and $R_1 \in \mathbb{R}^{d}$ is a random vector.
+
+\textbf{Stage 2 (Consuming prey):} occurs during $T/3 < t < 2T/3$.
+
+\begin{equation}
+x_{i,j}^{\mathrm{new}} = x_{\mathrm{best},j} + \exp\!\left((t/T)^2\right) \cdot (R_{B,j} - 0.5) \cdot (x_{\mathrm{best},j} - x_{i,j}), \quad T/3 < t < 2T/3
+\end{equation}
+
+where $R_B \sim \mathcal{N}{(0,1)}^d$ is a standard normal random vector and $x_{\mathrm{best}}$ denotes the current best solution.
+
+\textbf{Stage 3 (Feeding on prey):} occurs during $t > 2T/3$.
+
+\begin{equation}
+x_{i,j}^{\mathrm{new}} = x_{\mathrm{best},j} + \left(1 - t/T\right)^{2t/T}\,R_{L,j}\,x_{i,j}, \quad t > 2T/3
+\end{equation}
+
+where $R_L \in \mathbb{R}^{d}$ is a weighted Levy-flight random vector generated by $\mathrm{Levy}(d)$.
+
+
+These time intervals correspond to the three phases of Secretary Bird predation, reflecting a sequential approach to exploration.
+
+
+\textbf{Escape Strategy (Exploitation Phase).}
+When encountering natural predators such as eagles or hawks, secretary birds employ two primary escape strategies: camouflage (C1) and flight or rapid running (C2). In SBOA, the likelihood of selecting each strategy is assumed to be equal.
+
+The position of the secretary bird is updated using the following equations:
+
+\begin{equation}
+x_{i,j,\mathrm{C1}}^{\mathrm{new}} = x_{\mathrm{best},j} + \left(1 - t/T\right)^{2t/T}\,(2R_{B1,j})\,x_{i,j}\,(x_{\mathrm{best},j} - x_{i,j})
+\end{equation}
+
+\begin{equation}
+x_{i,j,\mathrm{C2}}^{\mathrm{new}} = x_{i,j} + R_{2,j}\,(x_{\mathrm{rand},j} - Kx_{i,j})
+\end{equation}
+
+where $R_2 \sim \mathcal{N}{(0,1)}^d$ is a standard normal random vector, $x_{\mathrm{rand}}$ is a randomly selected solution, and $K$ is a control coefficient.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.60\textwidth]{hyper_opt.png}
+    \caption{Hyperparameter Optimization}\label{fig:Hyper_opt}
+\end{figure}
+
+
+\subsection{SBOA for Hyperparameter Optimization}
+The detailed algorithm for hyperparameter optimization is as follows:
+
+\begin{enumerate}
+\item \textbf{Step 1: Parameter definition and search range determination.} Define the number of neurons in the first and second BiGRU layers, learning rate, optimizer type (Adam, Adadelta, RMSProp, SGD), and dropout rate. Determine search ranges based on model complexity and computational constraints.
+
+\item \textbf{Step 2: Population initialization.} Initialize the SBOA population where each bird represents a complete hyperparameter configuration, including update direction and magnitude, and track each bird's best fitness and direction.
+
+\item \textbf{Step 3: Fitness evaluation and best position update.} Build the GCN-BiGRU model using the current hyperparameters, train on the training set, evaluate on validation loss (lower loss indicates better fitness), and update both individual-best and global-best positions.
+
+\item \textbf{Step 4: Local optimum detection and genetic operations.} Monitor fitness variation, stagnation, and low population diversity; exchange hyperparameters between parent solutions; and preserve the best 20\% of the population.
+
+\item \textbf{Step 5: Hyperparameter update with new population.} Apply Levy flights for global exploration, perform targeted search toward the current best solution, and enforce valid bounds for all parameters.
+
+\item \textbf{Step 6: Iteration control and convergence check.} Stop when the maximum number of iterations is reached, population diversity becomes very low, or the target fitness is achieved.
+
+\item \textbf{Step 7: Optimal hyperparameter selection.} Select the best hyperparameter combination found by SBOA.
+\end{enumerate}
+
+\subsection{Intrusion Detection Process}
+An intrusion detection algorithm based on the SBOA-optimized GCN-BiGRU model is used in this study. The process performs dataset preprocessing, model construction, hyperparameter optimization, and final classification.
+
+\begin{enumerate}
+\item Raw data from training and test sets are preprocessed (normalization and standardization) and converted into model-ready representations.
+\item The GCN-BiGRU model is built to extract spatial and temporal features, followed by softmax-based classification.
+\item The SBOA algorithm is applied to optimize model hyperparameters through iterative training and validation.
+\end{enumerate}
+
+\begin{algorithm}
+\caption{BG-GCN with SBOA Hyperparameter Optimization}
+\begin{algorithmic}[1]
+
+\Require{} $\mathcal{D}_{\mathrm{train}},\,\mathcal{D}_{\mathrm{val}},\,\mathcal{D}_{\mathrm{test}}$: preprocessed and label-encoded network traffic splits
+\Require{} $P$: SBOA population size;\; $T$: maximum iterations
+\Require{} $\mathcal{H}$: hyperparameter search space (BiGRU units, learning rate, dropout rate, optimizer)
+\Require{} $\epsilon > 0$: convergence threshold;\; $K$: patience (max iterations without improvement)
+
+\Ensure{} $\mathcal{M}^{*}$: trained BG-GCN model with optimal hyperparameters $\theta^{*}$
+\Ensure{} $\hat{y}$: predicted attack-class labels for $\mathcal{D}_{\mathrm{test}}$
+\Ensure{} Performance metrics: Accuracy, Precision, Recall, F1-score
+
+\Statex
+\State \textbf{Preprocessing:} normalize features; encode class labels in $\mathcal{D}_{\mathrm{train}},\mathcal{D}_{\mathrm{val}},\mathcal{D}_{\mathrm{test}}$
+
+\Statex{}\textit{// --- SBOA Initialization ---}
+\State Initialize population $\{\theta_p\}_{p=1}^{P}$ by sampling $\mathcal{H}$ uniformly at random
+\State $\theta^{*} \leftarrow \theta_1$;\quad $f^{*} \leftarrow 0$;\quad $\textit{no\_improve} \leftarrow 0$;\quad $f_{\mathrm{prev}} \leftarrow 0$
+
+\Statex{}\textit{// --- Main SBOA Loop ---}
+\For{$t = 1$ \textbf{to} $T$}
+  \For{$p \leftarrow 1$ \textbf{to} $P$}
+    \State Build GCN-BiGRU model $\mathcal{M}_p$ with hyperparameters $\theta_p$
+    \State Train $\mathcal{M}_p$ on $\mathcal{D}_{\mathrm{train}}$; compute $f_p \leftarrow \mathrm{Accuracy}(\mathcal{M}_p,\,\mathcal{D}_{\mathrm{val}})$
+    \If{$f_p > f^{*}$}
+      \State $f^{*} \leftarrow f_p$;\quad $\theta^{*} \leftarrow \theta_p$ \Comment{Update global best}
+    \EndIf
+    \State Update $\theta_p$ via \textit{hunting strategy} (exploration phase)
+    \State Update $\theta_p$ via \textit{escape strategy} (exploitation phase)
+    \State Apply mutation to $\theta_p$ with probability $\gamma$
+  \EndFor
+
+  \Statex{}\quad\textit{// --- Termination Criteria ---}
+  \If{$|f^{*} - f_{\mathrm{prev}}| < \epsilon$} \Comment{Negligible improvement this iteration}
+    \State $\textit{no\_improve} \leftarrow \textit{no\_improve} + 1$
+  \Else
+    \State $\textit{no\_improve} \leftarrow 0$
+  \EndIf
+  \State $f_{\mathrm{prev}} \leftarrow f^{*}$
+  \If{$\textit{no\_improve} \geq K$}
+    \State \textbf{break} \Comment{Early termination: convergence reached}
+  \EndIf
+\EndFor
+
+\Statex{}\textit{// --- Final Model ---}
+\State $\mathcal{M}^{*} \leftarrow \mathrm{build\_GCN\_BiGRU}(\theta^{*})$
+\State Retrain $\mathcal{M}^{*}$ on $\mathcal{D}_{\mathrm{train}} \cup \mathcal{D}_{\mathrm{val}}$ with early stopping on held-out loss
+\State $\hat{y} \leftarrow \mathcal{M}^{*}(\mathcal{D}_{\mathrm{test}})$
+\State Compute Accuracy, Precision, Recall, F1-score from $(\hat{y},\, y_{\mathrm{test}})$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.55\textwidth]{gb.png}
+    \caption{GCN-BiGRU Algorithm}\label{fig:GB}
+\end{figure}
+
+\subsection{Dataset Collection}
+
+The proposed method is evaluated on two benchmark datasets: CICIDS2017 and NSL-KDD. These datasets are among the most widely used benchmarks for IDS research; other commonly employed datasets include UNSW-NB15~\cite{bib31}, which provides diverse modern attack scenarios.
+
+\textbf{CICIDS2017.} This dataset, released by the Canadian Institute for Cybersecurity~\cite{bib22}, is used as the primary benchmark for intrusion detection experiments, including hyperparameter optimization, cross-validation, and comparative performance analysis. It contains real-world and simulated network traffic with both benign and malicious flows. Each record corresponds to one network flow and includes 84 attributes in total (83 traffic features and 1 label).
+
+Among the CICIDS2017 feature attributes:
+\begin{itemize}
+\item Nominal attributes include identifiers such as Flow ID, Source IP, Destination IP, and Protocol.
+\item Binary attributes represent TCP flags such as FIN, SYN, RST, PSH, ACK, URG, CWE, and ECE.
+\item Numeric attributes describe flow statistics such as packet length, inter-arrival time, flow duration, byte rate, packet rate, and activity-based measurements.
+\item The final attribute (Label) identifies the traffic class for each flow.
+\end{itemize}
+
+Each network flow is labeled as benign or as one of several attack types.
+\begin{table}[htbp]
+\caption{Attack Distribution in CIC-IDS 2017}\label{tab:attack_cic_2017}
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Traffic Type & Count & Share (\%) \\
+\midrule
+Benign                  & 2,358,036 & 82.83 \\
+DoS Hulk                &   231,073 &  8.11 \\
+Port Scan               &   158,930 &  5.58 \\
+DDoS                    &    41,835 &  1.47 \\
+DoS GoldenEye           &    10,293 &  0.36 \\
+FTP Patator             &     7,938 &  0.28 \\
+SSH Patator             &     5,897 &  0.21 \\
+DoS Slow Loris          &     5,796 &  0.20 \\
+DoS Slow HTTP Test      &     5,499 &  0.19 \\
+Botnet                  &     1,966 &  0.07 \\
+Web Attack: Brute Force &     1,507 &  0.05 \\
+Web Attack: XSS         &       625 &  0.02 \\
+Infiltration            &        36 & $<$0.01 \\
+Web Attack: SQL Injection &      21 & $<$0.01 \\
+HeartBleed              &        11 & $<$0.01 \\
+\midrule
+\textbf{Total}          & \textbf{2,829,467} & \textbf{100.00} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{NSL-KDD.} NSL-KDD~\cite{bib21,bib30} is an improved version of the KDD'99 benchmark and contains 41 features per connection record. Each record is classified as normal or attack traffic. The attacks are grouped into four major categories:
+\begin{itemize}
+\item Denial of Service (DoS)
+\item Probe (surveillance and scanning attacks)
+\item Remote to Local (R2L)
+\item User to Root (U2R)
+\end{itemize}
+
+Using these two datasets provides a broad and reliable evaluation of the proposed method across different intrusion detection scenarios.
+
+\subsection{Data Preprocessing}
+
+In this study, the CICIDS 2017 dataset is used as an example for preprocessing. To ensure compatibility with deep learning models and improve classification performance, a four-stage preprocessing pipeline is applied. The pipeline includes categorical feature encoding, train-split imputation with feature augmentation, feature standardization with variance filtering, and graph-aware input construction. To mitigate the effect of class imbalance, class-weighted loss is applied during model training so that minority attack classes contribute proportionally to the loss function.
+
+The detailed steps are as follows:
+\begin{enumerate}
+\item \textbf{Categorical feature encoding.} The CICIDS 2017 dataset contains both categorical and numerical flow attributes. Categorical features, such as the protocol field, are converted into numerical representations using one-hot encoding. This transformation represents categorical information as binary vectors that can be processed by learning algorithms. The label attribute is also mapped to integer values corresponding to traffic classes such as benign, DoS, DDoS, Port Scan, brute force, web attacks, botnet, and infiltration.
+
+\item \textbf{Imputation and feature augmentation.} Missing values are imputed using training-split medians to avoid data leakage. A log-transformed feature view (log1p) is concatenated with the original numerical features to better capture heavy-tailed traffic behavior.
+
+\item \textbf{Feature standardization and filtering.} Z-score standardization (StandardScaler) is applied using training statistics only. Low-variance features are then removed using a variance threshold to reduce noise and improve learning stability.
+
+\item \textbf{Graph-aware input construction.} A normalized feature-correlation adjacency matrix is built from the training split using top-k edge filtering. Finally, each sample is reshaped to $(\text{samples}, 1, \text{features})$ and provided to the BG-GCN model.
+\end{enumerate}
+
+\section{Experimental Results}\label{sec:results}
+
+In this section, the proposed BG-GCN framework is compared with existing methods. The performance of the proposed model is evaluated on two benchmark datasets: NSL-KDD, and CICIDS2017. The outputs are analyzed, and graphical visualizations are provided to support the discussion.
+
+\subsection{Experimental Setup}\label{subsec:exp-setup}
+The experiments were conducted on a computer equipped with an AMD Ryzen 7 7735HS processor, 32 GB RAM, Windows 11 operating system, and an NVIDIA GeForce RTX 3050 GPU. The implementation was carried out using Python and its associated libraries. This hardware configuration represents a moderate computing environment, demonstrating that the proposed method can be effectively implemented on mid-range systems without requiring high-end computational resources. The model was trained for 100 epochs using a batch size of 512. The Adam optimizer with learning rate 0.0059 was used for parameter updates. Early stopping was applied to prevent overfitting.
+\subsection{Evaluation Measures}\label{subsec:eval}
+
+In deep learning-based intrusion detection, evaluation metrics are required to assess model performance comprehensively. In this study, standard metrics including accuracy, precision, recall, F1-score, error rate, and execution time are used. These metrics are derived from the confusion matrix terms True Positive (TP), True Negative (TN), False Positive (FP), and False Negative (FN).
+
+\begin{itemize}
+\item \textbf{Accuracy}
+Accuracy represents the proportion of correctly classified instances with respect to the total number of samples.
+\begin{equation}
+\mathrm{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+\item \textbf{Precision}
+Precision is defined as the proportion of correctly identified positive instances among all instances predicted as positive.
+
+\begin{equation}
+\mathrm{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+
+\item \textbf{Recall}
+Recall measures the proportion of actual positive instances that are correctly identified as positive.
+
+\begin{equation}
+\mathrm{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+
+\item \textbf{False Positive Rate (FPR)}
+The False Positive Rate (FPR) represents the fraction of negative instances that are incorrectly classified as positive, and its value lies between 0 and 1.
+
+\begin{equation}
+\mathrm{FPR}(\%) = \frac{FP}{FP + TN} \times 100
+\end{equation}
+
+\item \textbf{False Negative Rate (FNR)}
+The False Negative Rate (FNR) is the proportion of actual positive instances incorrectly classified as negative.
+
+\begin{equation}
+\mathrm{FNR}(\%) = \frac{FN}{FN + TP} \times 100
+\end{equation}
+
+\item \textbf{Error Rate}
+A lower error rate corresponds to better performance in detecting attacks.
+
+\begin{equation}
+\mathrm{ER}(\%) = \frac{FP + FN}{TP + TN + FP + FN} \times 100
+\end{equation}
+
+\item \textbf{F1-Score}
+The F1-score is calculated as the harmonic mean of precision and recall, providing a balanced measure that considers both metrics equally.
+
+\begin{equation}
+\mathrm{F1\text{-}Score} = \frac{2 \times TP}{2 \times TP + FP + FN}
+\end{equation}
+
+\item \textbf{Execution Time}
+Execution time refers to the total duration needed for a particular process to finish running.
+
+\begin{equation}
+\mathrm{Execution\ Time} = E - S
+\end{equation}
+where $E$ and $S$ denote end and start time, respectively.
+
+\end{itemize}
+
+
+
+\subsection{Performance Analysis}\label{subsec:perf}
+
+In this section, the proposed framework is systematically evaluated. Multiple experimental configurations were designed with different performance metrics and detection intervals to assess the effectiveness of the suggested method. 
+To assess the performance of the proposed BG-GCN architecture, several widely accepted evaluation measures were employed, including accuracy, precision, recall, F1-score, loss, and the area under the receiver operating characteristic curve (ROC–AUC). These metrics collectively provide a detailed understanding of the model’s capability to detect and classify network traffic. The results of the experiments highlight the strong performance of the proposed model, reaching training, validation and testing accuracies of 99.78\%, 99.77\% and 99.79\%, respectively for CICIDS 2017. The loss value was also minimal at 0.0085, reflecting stable convergence and effective learning. Table~\ref{tab:performance} reports the performance metrics for the training, validation, and testing datasets, showing consistently high precision, recall, and F1-score values throughout the evaluation process.
+The BG-GCN architecture is based on a hybrid deep learning design that combines Graph Convolutional network (GCN) with Bidirectional Gated Recurrent Unit (BiGRU) layers. The confusion matrix presented in Fig.~\ref{fig:confusion_matrix} offers a detailed representation of the model’s classification results. It shows that most samples were correctly classified, with only a very small number of misclassifications. These findings highlight the effectiveness of the proposed method in differentiating between legitimate network behaviour and malicious botnet activity.
+\begin{table}[htbp]
+\caption{Performance analysis of the proposed BG-GCN model on training, validation, and testing datasets (CICIDS-2017)}\label{tab:performance}
+\centering
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Dataset Split & Accuracy (\%) & Precision (\%) & Recall (\%) & F1-score (\%) & Loss \\
+\midrule
+Training & 99.78 & 99.38 & 99.32 & 99.35 & 0.0093 \\
+Validation & 99.77 & 99.45 & 99.21 & 99.33 & 0.0091 \\
+Testing & 99.79 & 99.49 & 99.25 & 99.37 & 0.0085 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Performance analysis of the proposed BG-GCN model on training, validation, and testing datasets (NSL-KDD)}\label{tab:performance_nslkdd}
+\centering
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Dataset Split & Accuracy (\%) & Precision (\%) & Recall (\%) & F1-score (\%) & Loss \\
+\midrule
+Training & 98.99 & 99.00 & 98.99 & 98.99 & 0.0296 \\
+Validation & 98.96 & 98.95 & 98.96 & 98.95 & 0.0327 \\
+Testing & 98.23 & 98.47 & 98.96 & 98.59 & 0.0313 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig8.png}
+    \caption{Confusion matrix of the proposed BG-GCN model - CICIDS 2017}\label{fig:confusion_matrix}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{conf_NSL_KDD.png}
+    \caption{Confusion matrix of the proposed BG-GCN model - NSL-KDD}\label{fig:confusion_matrix_NSLKDD}
+\end{figure}
+
+The learning behaviour of the model was further analysed by observing the changes in training and validation metrics across multiple epochs. Figs.~\ref{fig:training_curves_cicids} and~\ref{fig:training_curves_nslkdd} demonstrate that both training and validation accuracy gradually improve during the training process, whereas the loss values consistently decline. This pattern suggests that the model is able to learn meaningful features while preserving good generalization performance on new data.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig9.png}
+    \caption{Training and validation accuracy and loss curves}\label{fig:training_curves_cicids}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Acc_loss_nslkdd.png}
+    \caption{Training and validation accuracy and loss curves}\label{fig:training_curves_nslkdd}
+\end{figure}
+
+A reliable detection system should ideally exhibit minimal error rates across different statistical measures, including False Positive Rate (FPR), False Negative Rate (FNR), False Discovery Rate (FDR), and False Omission Rate (FOR). The proposed BG-GCN model produced very low error values as presented in Table~\ref{tab:error_rate}.
+
+\begin{table}[htbp]
+\caption{Class-wise additional performance indicators of the proposed BG-GCN model (CICIDS-2017)}\label{tab:error_rate}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Class & FPR (\%) & FNR (\%) & FDR (\%) & FOR (\%) \\
+\midrule
+Class 0 (Brute Force) & 0.0066 & 2.1122 & 1.8262 & 0.0077 \\
+Class 1 (DDoS) & 0.0022 & 0.2083 & 0.0417 & 0.0111 \\
+Class 2 (DoS) & 0.0143 & 0.9394 & 0.1734 & 0.0782 \\
+Class 3 (Normal Traffic) & 0.7455 & 0.1044 & 0.1514 & 0.5149 \\
+Class 4 (Port Scanning) & 0.0384 & 0.2058 & 1.0207 & 0.0077 \\
+Class 5 (Web Attacks) & 0.0064 & 8.0997 & 7.5235 & 0.0069 \\
+Class 6 (Bots) & 0.0326 & 41.7808 & 41.9795 & 0.0323 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Class-wise additional performance indicators of the proposed BG-GCN model (NSL-KDD)}\label{tab:classwise_nslkdd}
+\centering
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Class & FPR (\%) & FNR (\%) & FDR (\%) & FOR (\%) \\
+\midrule
+Class 0 (DoS) & 0.1612 & 0.0749 & 0.2866 & 0.0421 \\
+Class 1 (Normal) & 0.8884 & 1.1135 & 0.8224 & 1.2026 \\
+Class 2 (Probe) & 0.2281 & 0.7102 & 2.1465 & 0.0745 \\
+Class 3 (R2L) & 0.2946 & 13.8739 & 11.8081 & 0.3543 \\
+Class 4 (U2R) & 0.0180 & 27.7778 & 23.5294 & 0.0225 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig13.png}
+    \caption{Additional evaluation indicators CICIDS 2017: TNR, MCC, and NPV}\label{fig:additional_indicators}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{TNR_NSLKDD.png}
+    \caption{Additional evaluation indicators NSL-KDD: TNR, MCC, and NPV}\label{fig:additional_indicators_nslkdd}
+\end{figure}
+
+
+Additional evaluation indicators were also considered to provide a more comprehensive performance analysis. The model achieved a True Negative Rate (TNR) of 99.99\%, a Matthews Correlation Coefficient (MCC) of 99.24\%, and a Negative Predictive Value (NPV) of 99.85\%, as shown in Fig.~\ref{fig:additional_indicators} and Fig.~\ref{fig:additional_indicators_nslkdd}. Moreover, the ROC curve analysis demonstrates the strong discriminative ability of the model in separating malicious network activity from legitimate traffic.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig17.png}
+    \caption{AUC-ROC Curve - CICIDS 2017}\label{fig:ROC_cicids}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{AUC_NSLKDD.png}
+    \caption{AUC-ROC Curve - NSL-KDD}\label{fig:ROC_nslkdd}
+\end{figure}
+
+In conclusion, the BG-GCN framework exhibits excellent capability in identifying and classifying a wide variety of botnet attacks. The model consistently achieved high precision, recall, and F1-score values across all traffic categories, demonstrating a well-balanced performance between detection accuracy and reliable identification of malicious instances. The analysis of the confusion matrix and additional statistical indicators further confirms the effectiveness of the proposed architecture. Overall,  BG-GCN represents a robust and dependable solution for addressing the complex challenge of botnet attack detection and classification.
+
+\subsection{Ablation Study: Deconstructing Model Efficacy}\label{subsec3}
+
+This section provides an extensive ablation analysis designed to evaluate the role of different components within the proposed BG-GCN framework. The investigation examines the architecture under multiple configurations to understand the contribution of each module. The experimental settings are:
+\begin{itemize}
+\item \textbf{Case 1 (GCN):} In this configuration, GCN is employed as the baseline model, followed by a fully connected dense layer for prediction.
+\item \textbf{Case 2 (GCN + BiGRU):} This setup integrates GCN with a single-layer BiGRU to jointly learn spatial dependencies and temporal patterns.
+\item \textbf{Case 3 (GCN + BiGRU + SBOA):} In the final configuration, SBOA is incorporated with the GCN-BiGRU architecture for hyperparameter optimization and improved detection performance.
+\end{itemize}
+
+\begin{table}[htbp]
+\caption{Ablation study: performance comparison across model configurations CICIDS 2017}\label{tab:t11}
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model Configuration & Accuracy (\%) & Precision (\%) & Recall (\%) & F1-score (\%) \\
+\midrule
+Case 1: GCN & 96.32 & 94.35 & 94.71 & 94.87 \\
+Case 2: GCN + BiGRU & 98.64 & 98.54 & 98.32 & 98.26 \\
+Case 3: GCN + BiGRU + SBOA & 99.79 & 99.49 & 99.25 & 99.37 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ablation study results highlight the considerable influence of integrating the Secretary Bird Optimization Algorithm (SBOA) for hyperparameter tuning with different spatial and temporal feature extraction strategies on the overall model effectiveness, as summarized in Table~\ref{tab:t11}. In Case 1, a single-layer GCN is implemented as the baseline configuration. Due to its shallow structure, the model struggles to capture complex spatial and temporal relationships within the data, which leads to comparatively lower accuracy.
+In Case 2, performance improves by adopting a deeper architecture that combines GCN with BiGRU. This configuration enhances the model’s capability to learn both spatial dependencies and temporal dynamics more effectively. Case 3 further strengthens the architecture by incorporating SBOA into the GCN–BiGRU framework for hyperparameter optimization. The optimized configuration yields superior performance by more efficiently modeling both spatial and temporal interactions.
+These findings emphasize the importance of integrating optimized spatial and temporal feature learning mechanisms within the BG-GCN framework, ultimately leading to enhanced anomaly detection capability in IIoT environments.
+
+
+
+\subsection{Complexity Analysis of Proposed Model (BG-GCN)}\label{subsec4}
+
+\subsubsection{Time Complexity}\label{subsubsec:time}
+
+The overall time complexity of BG-GCN is largely influenced by how many trainable parameters exist within the model structure. This number is governed by important hyperparameters such as the number and dimensions of convolutional filters, the number of units in the GRU layers, and the size of the fully connected (dense) layers.
+
+\begin{table}[htbp]
+\caption{Computational time analysis for training, validation, and testing phases}\label{tab:t12}
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Phase & Time (s) & Relative Cost (\%) \\
+\midrule
+Training & 30.76 & 67.4 \\
+Validation & 7.00 & 15.3 \\
+Testing & 7.86 & 17.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In the training process, the model repeatedly updates its parameters to minimize the loss function through gradient descent optimization. Each iteration involves evaluating the model and adjusting its weights, which means the computational cost is largely influenced by the number of trainable parameters. Moreover, the total training time is also determined by the number of epochs and the scale of the training dataset, since these factors define the total number of iterations required for convergence. Table~\ref{tab:t12} summarizes the computational time measurements for the training, validation, and testing phases, illustrating the efficiency of BG-GCN in terms of processing time.
+
+\subsubsection{Space Complexity}\label{subsubsec:space}
+
+The space complexity of the BG-GCN framework is mainly associated with the memory needed to store its learnable parameters. Each parameter requires a certain amount of memory, causing the overall memory consumption to increase proportionally with the total number of parameters in the network. In addition to parameter storage, extra memory is required for handling input data, intermediate feature maps, and gradient values generated during the training process. These requirements are influenced by factors such as input data size, the number of neurons within the network layers, and the total training iterations required for convergence.
+
+Because the model processes large datasets and contains numerous trainable parameters, BG-GCN can demand substantial memory resources. Nevertheless, these constraints can be effectively addressed by utilizing high-performance computing platforms, particularly Graphics Processing Units (GPUs), along with optimized computational strategies. Regularization approaches such as weight decay and training strategies like early stopping can also help control model complexity, thereby improving both memory efficiency and training stability.
+Overall, despite the significant computational and memory demands of BG-GCN, the application of optimization strategies and hardware-based acceleration allows the model to function as an efficient and scalable method for challenging problems like botnet attack detection and classification.
+
+
+\subsection{Analysis of Experimental Results}
+
+\subsubsection{Hyperparameter Optimization Results}
+Formal training of the model is started after hyperparameter optimization has finished. Optimal hyperparameters are obtained on completing the iterations of the SBOA algorithm. Table~\ref{tab:hyperparams} shows the outcome of hyperparameter optimization.
+\begin{table}[htbp]
+\caption{Optimized hyperparameters obtained via SBOA}\label{tab:hyperparams}
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Parameter & Value \\
+\midrule
+Number of neurons (BiGRU Layer 1) & 434 \\
+Number of neurons (BiGRU Layer 2) & 360 \\
+Learning rate & 0.0059 \\
+Optimizer type & Adam \\
+Dropout rate & 0.43 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Experiment Assessment Results on multiple datasets}
+
+Following hyperparameter optimization via SBOA, the BG-GCN model is trained and evaluated on the CICIDS2017 and NSL-KDD benchmark datasets. Table~\ref{tab:soa_comparison} compares the accuracy of the proposed BG-GCN model against representative state-of-the-art methods on CICIDS2017.
+
+\begin{table}[htbp]
+\caption{Comparison of BG-GCN with state-of-the-art models on CICIDS2017}\label{tab:soa_comparison}
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Model & Dataset & Accuracy (\%) \\
+\midrule
+CNN+LSTM~\cite{bib13}          & CICIDS2017 & 98.20 \\
+GAT-IDS~\cite{bib9}            & CICIDS2017 & 98.70 \\
+ResNet-BiGRU~\cite{bib14}      & CICIDS2017 & 99.20 \\
+\midrule
+\textbf{BG-GCN (proposed)}     & \textbf{CICIDS2017} & \textbf{99.79} \\
+        \bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:soa_comparison}, the proposed BG-GCN achieves an accuracy of \textbf{99.79\%} on CICIDS2017, surpassing CNN+LSTM~\cite{bib13} (98.20\%), GAT-IDS~\cite{bib9} (98.70\%), and ResNet-BiGRU~\cite{bib14} (99.20\%) by margins of 1.59, 1.09, and 0.59 percentage points, respectively. This consistent improvement demonstrates the benefit of jointly modelling spatial feature correlations via GCN and temporal dynamics via BiGRU, further enhanced by SBOA hyperparameter optimization.
+
+The GCN front-end learns feature-correlation structure through graph-based aggregation, producing compact embeddings that expose the most discriminative traffic attributes without discarding information. These embeddings are then processed by the BiGRU module, which captures sequential and bidirectional temporal dependencies in network flow data. The softmax classification layer produces final multi-class predictions. Full precision, recall, F1-score, and loss metrics for both datasets are reported in Tables~\ref{tab:performance} and~\ref{tab:performance_nslkdd}, confirming that the gains in accuracy are accompanied by consistently high performance across all evaluation criteria.
+
+\section{Conclusion}\label{sec:conclusion}
+In this study, a novel intrusion detection system is proposed. The system uses deep learning-based methods to detect intrusions in IoT networks. It has three main components: a preprocessing module, a Graph Convolutional Network, and a BiGRU followed by a fully connected classification layer. The preprocessing module cleans and prepares the data, while GCN and BiGRU capture spatial and temporal features from the input. Performance is evaluated using standard metrics, including precision, accuracy, recall, false positive rate, and F1-score. Extensive comparisons with current state-of-the-art methods further demonstrate the improvements achieved by the proposed method.
+Despite improved performance over current state-of-the-art methods, several limitations remain. One major challenge in designing deep learning-based intrusion detection systems is the requirement for large training datasets, which can be difficult to obtain because of privacy constraints. Deep learning methods also require substantial computational resources for training and deployment, creating challenges for resource-constrained IoT devices. Although a combination of datasets was used to cover diverse attack types, an ideal future direction is a single comprehensive dataset that supports stronger generalization. Exploring federated learning together with such comprehensive datasets could further improve intrusion detection in IoT systems.
+
+\section*{Acknowledgements}
+The authors would like to thank researchers and engineers for pioneering work in the domain of intrusion detection which laid the foundation for this study. Our sincere appreciation goes to our academic advisors and colleagues for their continuous support, insightful feedback, and constructive criticism throughout the research process. Their expertise and encouragement were instrumental in shaping the direction and scope of this work.
+
+\section*{Declarations}
+\begin{itemize}
+\item \textbf{Funding:} Not applicable.
+\item \textbf{Competing Interests:} The authors declare that they have no competing interests or conflicts of interest.
+\item \textbf{Availability of Data and Materials:} The datasets analyzed during the current study are publicly available: CICIDS2017 at \url{https://www.unb.ca/cic/datasets/ids-2017.html} and NSL-KDD at \url{https://www.unb.ca/cic/datasets/nsl.html}.
+\item \textbf{Code Availability:} The code underlying this article will be shared on reasonable request to the corresponding author.
+\item \textbf{Authors' Contributions:} A.K. conceptualized the methodology, developed the code, performed the experiments, and wrote the original draft. M.K. supervised the research, refined the methodology, reviewed the final manuscript, and provided critical feedback. Both authors read and approved the final manuscript.
+\end{itemize}
+
+%%===========================================================================================%%
+%% If you are submitting to one of the Nature Portfolio journals, using the eJP submission   %%
+%% system, please include the references within the manuscript file itself. You may do this  %%
+%% by copying the reference list from your .bbl file, paste it into the main manuscript .tex %%
+%% file, and delete the associated \bibliography commands.
+
+\appendix
+\section{My Appendix}
+Appendix sections are coded under \verb+\appendix+.
+
+\verb+\printcredits+ command is used after appendix sections to list 
+author credit taxonomy contribution roles tagged using \verb+\credit+ 
+in frontmatter.
+
+\printcredits
+
+%% Loading bibliography style file
+%\bibliographystyle{model1-num-names}
+\bibliographystyle{cas-model2-names}
+
+% Loading bibliography database
+\bibliography{sn-bibliography}
+
+
+%\vskip3pt
+
+\bio{}
+Author biography without author photo.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+\endbio
+
+\bio{figs/cas-pic1}
+Author biography with author photo.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+\endbio
+
+\vskip3pc
+
+\bio{figs/cas-pic1}
+Author biography with author photo.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+Author biography. Author biography. Author biography.
+\endbio
+
+
+\end{document}
+
